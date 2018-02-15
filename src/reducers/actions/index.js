@@ -3,12 +3,16 @@ import {
     LOGOUT_USER,
     UPDATE_COMPANY_SETTINGS,
     UPDATE_CURRENT_INVOICE,
+    UPDATE_INVOICE_SETTINGS,
     SAVE_INVOICE_TO_DRAFT,
     SAVE_INVOICE,
     DELETE_INVOICE,
     DELETE_DRAFT,
     EMPTY_DRAFTS,
     EMPTY_INVOICES,
+    EMPTY_COMPANY_SETTINGS,
+    EMPTY_CURRENT_INVOICE,
+    EMPTY_INVOICE_SETTINGS
 } from './constants';
 
 export const authUser = (user) => ({
@@ -24,6 +28,11 @@ export const updateCompanySettings = (settings) => ({
         type: UPDATE_COMPANY_SETTINGS,
         settings
     });
+
+export const updateInvoiceSettings = (settings) => ({
+    type: UPDATE_INVOICE_SETTINGS,
+    settings
+});
 
     
 export const updateCurrentInvoice = (invoice) => ({
@@ -59,5 +68,30 @@ export const emptyDraft = () => ({
 
 export const emptyInvoice = () => ({
     type: EMPTY_INVOICES,
+});
+
+export const emptySettings = () => ({
+    type: EMPTY_COMPANY_SETTINGS
+});
+
+export const emptyInvoiceSettings = () => ({
+    type: EMPTY_INVOICE_SETTINGS
+});
+
+export const emptyCurrentInvoice = () => ({
+    type: EMPTY_CURRENT_INVOICE,
+    invoice: {
+        invoiceNumber: '',
+        invoiceDate: '',
+        invoiceDueDate: '',
+        clientName: '',
+        billTo: '',
+        clientAddress: '',
+        clientCity: '',
+        clientCountry: '',
+        invoiceItems: [],
+        invoiceNotes: '',
+        
+    }
 });
 

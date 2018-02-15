@@ -23,12 +23,27 @@ class HomeScreen extends Component {
         super(props);
 
         this.state = {
-            fabActive: false
+            fabActive: false,
+            isEditingInvoice: 0
         };
     }
 
     componentDidMount() {
-        
+        const inv = this.props.EditInvoice;
+        if (inv.invoiceNumber === ''
+        && inv.invoiceDate === ''
+        && inv.invoiceDueDate === ''
+        && inv.clientName === ''
+        && inv.billTo === ''
+        && inv.clientAddress === ''
+        && inv.clientCity === ''
+        && inv.clientCountry === ''
+        && inv.invoiceItems.length === 0
+        && inv.invoiceNotes === '') {
+            this.setState({ isEditingInvoice: 0 });
+        } else {
+            this.setState({ isEditingInvoice: 1 });
+        }
     }
 
 
@@ -81,7 +96,7 @@ class HomeScreen extends Component {
                                             <Icon name={'create'} style={{ color: 'red' }} />
                                         </View>
                                         <Text style={{ color: 'black', fontSize: 15 }}>Editing</Text>
-                                        <Text style={{ color: 'grey', fontSize: 13 }}>1 item</Text>
+                                        <Text style={{ color: 'grey', fontSize: 13 }}>{this.state.isEditingInvoice} item</Text>
                                     </Col>
                                     <Col 
                                         style={{ 
@@ -128,15 +143,20 @@ class HomeScreen extends Component {
                         </CardItem>
                         <CardItem>
                             <Body>
-                                <Text style={myStyles.dashboardStyles.detailsText}> User: {this.props.CompanySettings.userFullName !== '' ? this.props.CompanySettings.userFullName : 'Not set' }</Text>
-                                <Text style={myStyles.dashboardStyles.detailsText}> Company: {this.props.CompanySettings.companyName !== '' ? this.props.CompanySettings.companyName : 'Not set' }</Text>
-                                <Text style={myStyles.dashboardStyles.detailsText}> Address: {this.props.CompanySettings.companyAddress !== '' ? this.props.CompanySettings.companyAddress : 'Not set' }</Text>
+                                <Text style={myStyles.dashboardStyles.detailsText}>
+                                     User: {this.props.CompanySettings.userFullName ? this.props.CompanySettings.userFullName : 'Not set' }
+                                </Text>
+                                <Text style={myStyles.dashboardStyles.detailsText}> 
+                                    Company: {this.props.CompanySettings.companyName ? this.props.CompanySettings.companyName : 'Not set' }
+                                </Text>
+                                <Text style={myStyles.dashboardStyles.detailsText}> 
+                                    Address: {this.props.CompanySettings.companyAddress ? this.props.CompanySettings.companyAddress : 'Not set' }
+                                </Text>
                             </Body>
                         </CardItem>
 
                     </Card>
                     </Content>
-
                         <Fab
                             active={this.state.fabActive}
                             direction="up"

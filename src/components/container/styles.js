@@ -32,7 +32,7 @@ export const myStyles = {
             borderTopLeftRadius: 0,
         },
         cardHeader: {
-            backgroundColor: 'green',
+            backgroundColor: '#29abbf',
             borderTopRightRadius: 0,
             borderTopLeftRadius: 0,
             borderBottomRightRadius: 0,

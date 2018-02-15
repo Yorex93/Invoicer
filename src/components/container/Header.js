@@ -1,5 +1,5 @@
 import React from 'react';
-import {Header, Left, Body, Right, Title, Subtitle, Icon, Button} from 'native-base';
+import { Header, Left, Body, Right, Title, Subtitle, Icon, Button } from 'native-base';
 
 export default class AppHeader extends React.Component {
 
@@ -11,8 +11,6 @@ export default class AppHeader extends React.Component {
     render() {
         return (
             <Header 
-                androidStatusBarColor={'#006600'}
-                style={{ backgroundColor: '#006600' }}
             >
                 <Left>
                     <Button transparent onPress={() => { this.props.onLeftIconPressed(); }}>
@@ -54,10 +52,7 @@ export class SettingsHeader extends React.Component {
 
     render() {
         return (
-            <Header
-              androidStatusBarColor={'#006600'}
-                style={{ backgroundColor: '#006600' }}
-            >
+            <Header>
                 <Left>
                     <Button transparent onPress={() => { this.props.onBackPressed(); }}>
                         <Icon name="arrow-back" />

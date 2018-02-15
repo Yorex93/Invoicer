@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { Image } from 'react-native';
 import { Container, Content, Text, List, ListItem, Left, Body, Right, Icon } from 'native-base';
 import { connect } from 'react-redux';
-import { logOutUser } from '../../../reducers/actions';
+import { logOutUser, emptyCurrentInvoice, emptyDraft, emptyInvoice, emptySettings, emptyInvoiceSettings } from '../../../reducers/actions';
 
 
 const mainRoutes = [
@@ -35,6 +35,15 @@ const styles = {
 };
 
 class SideBar extends React.Component {
+
+    logOutUser = () => {
+        this.props.emptyDraft();
+        this.props.emptyInvoice();
+        this.props.emptySettings();
+        this.props.emptyCurrentInvoice();
+        this.props.emptyInvoiceSettings();
+        this.props.logOutUser();
+    };
 
     renderList = () => mainRoutes.map(link => (
             <ListItem
@@ -79,7 +88,7 @@ class SideBar extends React.Component {
                         <ListItem
                             icon
                             button
-                            onPress={() => this.props.logOutUser()}
+                            onPress={() => this.logOutUser()}
                             style={styles.list}
                         >
                             <Left>
@@ -100,7 +109,8 @@ const mapStateToProps = (state) => ({
        CurrentUser: state.CurrentUser
    });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ logOutUser }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators(
+    { logOutUser, emptyCurrentInvoice, emptyDraft, emptyInvoice, emptySettings, emptyInvoiceSettings }, dispatch);
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideBar);

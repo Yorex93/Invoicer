@@ -10,6 +10,10 @@ const invoiceReducer = (state = initialState, action) => {
         case 'DELETE_INVOICE':
             return state.filter(obj => !(new Set([action.id])).has(obj.invoiceId));
            
+
+        case 'EMPTY_INVOICES':
+            return [];
+
         case 'persist/REHYDRATE':
             if (action.payload) {
                 return action.payload.InvoiceList ? action.payload.InvoiceList : state;
