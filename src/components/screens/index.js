@@ -11,7 +11,6 @@ import NewInvoice from './Home/newInvoice';
 import invoiceSummary from './Home/invoiceSummary';
 import styles from '../container/styles';
 
-
 const ScreenRouter = DrawerNavigator(
     {
         Home: { screen: HomeScreen },
@@ -65,6 +64,7 @@ const SettingsNavigator = StackNavigator(
     }
 
 );
+
 
 export const MainRouter = StackNavigator(
     {
