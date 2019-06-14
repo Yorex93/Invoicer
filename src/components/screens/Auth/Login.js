@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, Form, Item, Input, Label, Left, Right, Center, Button, Text, Toast, Body, Title, Icon } from 'native-base';
+import { Container, Header, Content, Form, Item, Input, Label, Left, Right, Center, Button, Text, Body, Title, Icon } from 'native-base';
 import { StyleSheet, Dimensions, Alert } from 'react-native';
 import { bindActionCreators } from 'redux';
+import Toast from 'react-native-root-toast';
 import { connect } from 'react-redux';
-import { authUser } from '../../../reducers/actions';
+import { authUser, updateCompanySettings } from '../../../reducers/actions';
+import Loader from '../../../components/loader';
+import { LOGIN_API, USER_API } from '../../../constants';
+import { timeoutPromise } from '../../../utils/functions';
 
 
 class Login extends Component {
@@ -20,6 +24,8 @@ class Login extends Component {
         password_hidden: '',
         hasError: false,
         errors: [],
+        loading: false,
+        loadingText: ''
     };
   }
 
@@ -40,12 +46,12 @@ class Login extends Component {
         }
         if (error) {
             const mssg = errorMsg.map(msg => msg).join(', ');
-            Toast.show({
-                text: mssg,
-                position: 'bottom',
-                buttonText: 'Okay',
-                type: 'danger',
-                duration: 3000,
+            Toast.show(mssg, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                backgroundColor: '#00000090'
             });
           return false;
         }
@@ -55,18 +61,107 @@ class Login extends Component {
   };
 
   login = () => {
-      const user = {
-          username: this.state.username,
+      this.setState({ loading: true, loadingText: 'Attempting to login' });
+
+      // setTimeout(() => {
+      //   if (this.state.loading) {
+      //     this.setState({
+      //       loading: false,
+      //       loadingText: ''
+      //     });
+      //     Toast.show('Request took too long, check your internet settings', {
+      //       duration: Toast.durations.LONG,
+      //       position: Toast.positions.BOTTOM,
+      //       shadow: true,
+      //       animation: true,
+      //       backgroundColor: '#00000090'
+      //     });
+      //   }
+      // }, 10000);
+
+      timeoutPromise(10000, 'Timed out', fetch(LOGIN_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.username,
           password: this.state.password,
-          firstName: 'Emmanuel'
-      };
-      this.props.authUser(user);
+        }),
+      }))
+      .then(resp => resp.json())
+      .then(response => {
+        if (response.error) {
+          this.setState({
+            loading: false,
+            loadingText: ''
+          });
+          Toast.show('Login error: Email/Password Incorrect', {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            backgroundColor: '#ff000090'
+          });
+        } else if (response.success) {
+          const token = response.success.token;
+          this.setState({
+            loadingText: 'Login successful, Retrieving user information'
+          });
+
+          fetch(USER_API, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+          }).then(resp => resp.json()).then(data => {
+            const info = data.success;
+           
+            const user = {
+              token,
+              user: info
+            };
+
+            const company = {
+              companyName: info.company.company_name,
+              companyAddress: info.company.company_address,
+              companyLogo: '',
+              userFullName: info.profile.full_name
+            };
+
+            this.props.updateCompanySettings(company);
+            this.props.authUser(user);
+          });
+        } else {
+          this.setState({ loading: false, loadingText: '' });
+          Toast.show('Connection error', {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            backgroundColor: '#ff000090'
+          });
+        }
+      }).catch(error => {
+        console.log(`There was an error: ${error}`);
+        this.setState({ loading: false, loadingText: '' });
+        Toast.show('Connection error', {
+          duration: Toast.durations.LONG,
+          position: Toast.positions.BOTTOM,
+          shadow: true,
+          animation: true,
+          backgroundColor: '#ff000090'
+        });
+      });
   };
 
 
   render() {
     return (
       <Container>
+        <Loader loading={this.state.loading} loadingText={this.state.loadingText} />
         <Header>
           <Body>
             <Title>I-voicer Login</Title>
@@ -76,7 +171,7 @@ class Login extends Component {
         <Content style={styles.content}>
           <Form>
             <Item floatingLabel error={this.state.username_has_error}>
-              <Label>Username</Label>
+              <Label>Email</Label>
               <Input 
                 value={this.state.username} 
                 onChangeText={(username) => this.setState({ username, username_has_error: false })}
@@ -142,6 +237,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ authUser }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ authUser, updateCompanySettings }, dispatch);
 
 export default connect(null, mapDispatchToProps)(Login);

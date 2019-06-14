@@ -2,10 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Modal, KeyboardAvoidingView, TextInput, StyleSheet, Dimensions } from 'react-native';
-import { Container, Header, Content, Card, CardItem, Item, Input, Label, Left, Right, Center, Button, Text, Toast, Body, Title, Icon, List, ListItem, View, Footer } from 'native-base';
+import Toast from 'react-native-root-toast';
+import { Container, Header, Content, Card, CardItem, Item, Input, Label, Left, Right, Center, Button, Text, Body, Title, Icon, List, ListItem, View, Footer } from 'native-base';
 import { SettingsHeader } from '../../container/Header';
-import { updateCompanySettings } from '../../../reducers/actions';
+import { authUser, updateCompanySettings } from '../../../reducers/actions';
 import { myStyles } from '../../container/styles';
+import Loader from '../../loader';
+import { UPDATE_PROFILE_API } from '../../../constants';
 
 
 class CompanySettings extends React.Component {
@@ -20,6 +23,15 @@ class CompanySettings extends React.Component {
             modalUserFullName: false,
             focusCompanyNameInput: false,
             focusCompanyAddressInput: false,
+            companyName: '', 
+            companyAddress: '', 
+            companyLogo: '', 
+            userFullName: '',
+            EditCompanyName: '', 
+            EditCompanyAddress: '', 
+            EditUserFullname: '', 
+            loading: false,
+            loadingText: ''
         };
     }
     componentDidMount() {
@@ -44,7 +56,58 @@ class CompanySettings extends React.Component {
         const { companyName, companyAddress, companyLogo, userFullName } = this.state;
         const settings = { companyName, companyAddress, companyLogo, userFullName };
 
+        const token = this.props.CurrentUser[0].token;
+
         this.props.updateCompanySettings(settings);
+
+        fetch(UPDATE_PROFILE_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                companyName: settings.companyName,
+                companyAddress: settings.companyAddress,
+                companyLogo: settings.companyLogo,
+                userFullName: settings.userFullName
+            }),
+        }).then(resp => resp.json())
+        .then(response => {
+            console.log(response);
+            if (response.error) {
+                Toast.show('There was an error synchronizing your settings', {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    backgroundColor: '#ff000090'
+                });
+            } else if (response.success) {
+                Toast.show('Setting have been synchronized', {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    backgroundColor: '#007d00cc'
+                });
+
+                const user = {
+                    token,
+                    user: response.success
+                };
+                this.props.authUser(user);
+            } else {
+                Toast.show('Error while saving your settings', {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    backgroundColor: '#ff000090'
+                });
+            }
+        }).catch(error => console.log(`There was an error saving settings ${error}`));
     };
 
     closeModal = (modal) => {
@@ -313,6 +376,7 @@ class CompanySettings extends React.Component {
     render() {
         return (
             <Container>
+                <Loader loading={this.state.loading} loadingText={this.state.loadingText} />
                 <SettingsHeader title="Company Details" onBackPressed={this.backKeyPressed} />
 
                 {
@@ -350,10 +414,11 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = (state) => ({
-       CompanySettings: state.CompanySettings
+       CompanySettings: state.CompanySettings,
+       CurrentUser: state.CurrentUser
    });
 
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ updateCompanySettings }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ updateCompanySettings, authUser }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CompanySettings);

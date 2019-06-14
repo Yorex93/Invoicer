@@ -13,7 +13,7 @@ import Loader from '../../loader';
 import { INVOICE_API } from '../../../constants';
 
 
-class InvoiceSummary extends React.Component {
+class InvoicePreview extends React.Component {
     constructor(props) {
         super(props);
 
@@ -39,22 +39,10 @@ class InvoiceSummary extends React.Component {
             emailModal: false
         };
     }
-    componentWillMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.backHandler);
-    }
 
     componentDidMount() {
         //console.log(this.props.navigation.state.params.invoice);
         this.setState({ invoice: this.props.navigation.state.params.invoice });
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
-    }
-
-    backHandler = () => {
-        this.props.navigation.navigate('History');
-        return true;
     }
 
     emailInvoice = () => {
@@ -157,7 +145,7 @@ class InvoiceSummary extends React.Component {
         return (
             <Container>
                 <Loader loading={this.state.loading} loadingText={this.state.loadingText} />
-                <SettingsHeader title="Invoice Summary" onBackPressed={() => { this.props.navigation.navigate('History'); }} />
+                <SettingsHeader title="Invoice Preview" onBackPressed={() => { this.props.navigation.goBack(null); }} />
 
                 <Content style={myStyles.generalContent.content}>
                     <Card style={myStyles.cardStyles.card}>
@@ -362,4 +350,4 @@ const mapStateToProps = (state) => ({
 });
 
 
-export default connect(mapStateToProps, null)(InvoiceSummary);
+export default connect(mapStateToProps, null)(InvoicePreview);

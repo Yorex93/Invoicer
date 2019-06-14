@@ -9,6 +9,7 @@ import InvoiceSettings from './Settings/invoiceSettings';
 import CompanySettings from './Settings/companySettings';
 import NewInvoice from './Home/newInvoice';
 import invoiceSummary from './Home/invoiceSummary';
+import invoicePreview from './Home/invoicePreview';
 import styles from '../container/styles';
 
 const ScreenRouter = DrawerNavigator(
@@ -20,7 +21,7 @@ const ScreenRouter = DrawerNavigator(
             screen: StackNavigator(
                 {
                     NewInvoice: { screen: NewInvoice },
-                    InvoiceSummary: { screen: invoiceSummary },
+                    InvoicePreview: { screen: invoicePreview },
                 },
                 {
                     navigationOptions: { header: null }
@@ -31,6 +32,7 @@ const ScreenRouter = DrawerNavigator(
                   })
                 
         },
+        InvoiceSummary: { screen: invoiceSummary, navigationOptions: () => ({ drawerLockMode: 'locked-closed' }) }
     },
     {
         navigationOptions: {

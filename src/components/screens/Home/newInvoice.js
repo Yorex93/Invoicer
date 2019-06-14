@@ -36,10 +36,27 @@ class NewInvoice extends React.Component {
             invoiceNotes: '',
             itemDescription: '',
             itemUnitCost: '',
-            itemQuantity: ''
+            itemQuantity: '', 
+            emptyInvoice: {
+                invoiceNumber: '',
+                invoiceDate: '',
+                invoiceDueDate: '',
+                clientName: '',
+                billTo: '',
+                clientAddress: '',
+                clientCity: '',
+                clientCountry: '',
+                invoiceItems: [],
+                invoiceNotes: '',
+                itemDescription: '',
+                itemUnitCost: '',
+                itemQuantity: ''
+            }
 
         };
     }
+
+    
 
     componentWillMount() {
         BackHandler.addEventListener('hardwareBackPress', this.backHandler);
@@ -62,26 +79,6 @@ class NewInvoice extends React.Component {
             const invoiceDueDate = this.props.EditInvoice.invoiceDueDate !== '' ? new Date(this.props.EditInvoice.invoiceDueDate) : '';
             this.setState({ invoiceNumber, invoiceDate, invoiceDueDate, clientName, clientAddress, clientCountry, clientCity, billTo, invoiceItems, invoiceNotes });       
         //}
-    }
-
-    componentWillUpdate(props) {
-
-        // if (props.navigation.state.params.editInvoice) {
-        //     const invoice = props.navigation.state.params.editInvoice;
-        //     const { invoiceNumber, clientName, clientCountry, clientCity, clientAddress, billTo, invoiceItems, invoiceNotes } = invoice;
-        //     const invoiceDate = invoice.invoiceDate !== '' ? new Date(invoice.invoiceDate) : '';
-        //     const invoiceDueDate = invoice.invoiceDueDate !== '' ? new Date(invoice.invoiceDueDate) : '';
-        //     const invoiceId = invoice.id;
-        //     this.setState({ invoiceNumber, invoiceId, invoiceDate, invoiceDueDate, clientName, clientAddress, clientCountry, clientCity, billTo, invoiceItems, invoiceNotes, isEdit: true });
-        // } else {
-        //     this.setState({ invoiceId: props.DraftsLength });
-        //     const { invoiceNumber, clientName, clientCountry, clientCity, clientAddress, billTo, invoiceItems, invoiceNotes } = props.EditInvoice;
-        //     const invoiceDate = props.EditInvoice.invoiceDate !== '' ? new Date(props.EditInvoice.invoiceDate) : '';
-        //     const invoiceDueDate = props.EditInvoice.invoiceDueDate !== '' ? new Date(props.EditInvoice.invoiceDueDate) : '';
-        //     this.setState({ invoiceNumber, invoiceDate, invoiceDueDate, clientName, clientAddress, clientCountry, clientCity, billTo, invoiceItems, invoiceNotes });       
-        // }
-
-        // console.log(props);
     }
 
     componentWillUnmount() {
@@ -142,21 +139,7 @@ class NewInvoice extends React.Component {
     }
 
     clearUpdateInvoice = () => {
-       const invoice = {
-            invoiceNumber: '',
-            invoiceDate: '',
-            invoiceDueDate: '',
-            clientName: '',
-            billTo: '',
-            clientAddress: '',
-            clientCity: '',
-            clientCountry: '',
-            invoiceItems: [],
-            invoiceNotes: '',
-            itemDescription: '',
-            itemUnitCost: '',
-            itemQuantity: ''
-        };
+       const invoice = this.state.emptyInvoice;
 
         this.props.updateCurrentInvoice(invoice);
         this.cleanSlate();
@@ -235,7 +218,7 @@ class NewInvoice extends React.Component {
             this.props.saveInvoice(invoice);
 
             this.clearUpdateInvoice();
-            this.props.navigation.navigate('InvoiceSummary', { invoice });
+            this.props.navigation.navigate('InvoicePreview', { invoice });
         } else {
             alert('Some fields have not been given values');
         }
@@ -332,10 +315,7 @@ class NewInvoice extends React.Component {
     render() {
         return (
                 <Container>
-                    <Header
-                        androidStatusBarColor={'#006600'}
-                        style={{ backgroundColor: '#006600' }}
-                    >
+                    <Header>
                         <Left>
                             <Button 
                                 transparent 
