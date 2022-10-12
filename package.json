@@ -11,7 +11,7 @@
     "moment": "^2.19.4",
     "native-base": "^2.3.5",
     "react": "16.0.0",
-    "react-native": "0.51.0",
+    "react-native": "0.70.2",
     "react-native-extended-stylesheet": "^0.8.0",
     "react-native-image-crop-picker": "^0.19.1",
     "react-native-modal-datetime-picker": "^4.13.0",
